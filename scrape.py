@@ -14,7 +14,11 @@ import pandas as pd
 
 def get_url(url):
     '''wget a url '''
-    return requests.get(url)
+    try:
+        return requests.get(url)
+    except requests.exception.RequestException as e:
+        raise SystemExit(e)
+
 
 def main(arguments):
 
