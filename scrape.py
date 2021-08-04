@@ -20,6 +20,11 @@ def get_url(url):
     except requests.exception.RequestException as e:
         raise SystemExit(e)
 
+def convert_list_to_dict(entries, current, questions, answers):
+    ''' '''
+
+
+
 def main(arguments):
 
     # default parse args
@@ -51,10 +56,37 @@ def main(arguments):
     logger.info(f'Page received.')
     logger.debug(page.text)
 
-
-
-
+    # find text
+    try: 
+        soup = BeautifulSoup(page.text, features='lxml')
+        entries = soup.find_all('p')
     
+    except:
+        raise   
 
+    questions_idx = [i for i, elem in enumerate(e.getText() for e in entries) if elem.startswith('Q:')]
+    logger.debug(questions_idx)
+
+    # parse outputs, format into a csv with each row as Q/A
+    df = pd.DataFrame({'question': [], 'answer': []})
+    for index, original_index in enumerate(questions_idx):
+        current_question = entries[original_index].getText()
+        start = original_index+1
+        if index+1 < len(questions_idx):
+            next_ = questions_idx[index+1] 
+        else:
+            next_ = questions_idx[index]
+        logger.debug(f'{start}, {next_}')
+        current_answer_list = entries[start:next_]
+        current_answer = '\n\n'.join(t.getText() for t in current_answer_list)
+        df = df.append({
+            'question': current_question,
+            'answer': current_answer,
+        }, ignore_index=True)
+
+    logger.info(df)
+
+
+        
 if __name__ == '__main__':
     sys.exit(main(sys.argv[1:]))
