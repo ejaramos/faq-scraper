@@ -40,6 +40,7 @@ def main(arguments):
     args = parser.parse_args(arguments)
     URL = args.url
     DEBUG = args.debug
+    OUTFILE = args.outfile
 
     # set up logger
     if DEBUG:
@@ -85,6 +86,7 @@ def main(arguments):
         }, ignore_index=True)
 
     logger.info(df)
+    df.to_csv(OUTFILE, header=False, index=False, sep='^', line_terminator='`')
 
 
         
